@@ -166,25 +166,24 @@
         function setTheme(light) {
             if (light) {
                 body.classList.add('light');
-                themeIcon.innerHTML = '<path d=\"M12 4V2M12 22v-2M4.93 4.93l-1.42-1.42M19.07 19.07l-1.42-1.42M2 12H4m16 0h2M4.93 19.07l-1.42 1.42M19.07 4.93l-1.42 1.42M12 7a5 5 0 100 10 5 5 0 000-10z\"/>';
+                themeIcon.innerHTML = '<path d="M12 4V2M12 22v-2M4.93 4.93l-1.42-1.42M19.07 19.07l-1.42-1.42M2 12H4m16 0h2M4.93 19.07l-1.42 1.42M19.07 4.93l-1.42 1.42M12 7a5 5 0 100 10 5 5 0 000-10z"/>';
                 localStorage.setItem('theme', 'light');
             } else {
                 body.classList.remove('light');
-                themeIcon.innerHTML = '<circle cx=\"12\" cy=\"12\" r=\"5\"/>';
+                themeIcon.innerHTML = '<circle cx="12" cy="12" r="5"/>';
                 localStorage.setItem('theme', 'dark');
             }
         }
         toggleBtn.onclick = () => setTheme(!body.classList.contains('light'));
-        // שמירת מצב
         if (localStorage.getItem('theme') === 'light') setTheme(true);
 
         // Fetch news with animation
         async function fetchNews() {
             try {
-                // טען את החדשות מקובץ news.json
+                // טען את החדשות מקובץ news.json (פורמט Newsdata.io)
                 const response = await fetch('news.json');
-                const news = await response.json();
-                renderNews(news);
+                const data = await response.json();
+                renderNews(data.results || []);
             } catch (e) {
                 document.getElementById('news-container').innerHTML = '<div style="color:red">שגיאה בטעינת חדשות</div>';
             }
@@ -197,11 +196,13 @@
                 card.className = 'news-card';
                 card.style.animationDelay = (i * 0.1) + 's';
                 card.innerHTML = `
-                    <img class="news-image" src="${item.image || 'https://placehold.co/600x400?text=No+Image'}" alt="news image">
+                    <a href="${item.link}" target="_blank" rel="noopener">
+                        <img class="news-image" src="${item.image_url || 'https://placehold.co/600x400?text=No+Image'}" alt="news image">
+                    </a>
                     <div class="news-content">
                         <div class="news-title">${item.title}</div>
                         <div class="news-desc">${item.description || ''}</div>
-                        <div class="news-date">${item.date || ''}</div>
+                        <div class="news-date">${item.pubDate || ''}</div>
                     </div>
                 `;
                 container.appendChild(card);
