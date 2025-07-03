@@ -1,0 +1,26 @@
+name: Update News
+
+on:
+  schedule:
+    - cron: '0 * * * *' # כל שעה
+  workflow_dispatch:
+
+jobs:
+  update-news:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Fetch news from Newsdata.io
+        run: |
+          curl -s "https://newsdata.io/api/1/news?apikey=pub_aa7f10186a0f4db38e788e5d95bfaec3&language=he&country=il&category=top" -o news.json
+      - name: Commit and push if news changed
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          if [ -n "$(git status --porcelain news.json)" ]; then
+            git add news.json
+            git commit -m "Update news [auto]"
+            git push
+          fi
